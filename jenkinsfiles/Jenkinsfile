@@ -1,34 +1,41 @@
 pipeline {
     agent any
-    options {
-        skipStagesAfterUnstable()
-    }
+    
     tools {
-        maven 'Maven'
+        maven 'maven'
     }
 
     stages {
-        stage('Build') {
+        stage('Git checkout') {
             steps {
-                echo '------ Building ------'
-                sh 'mvn -B -DskipTests clean compile'
+                git credentialsId: '707d8473-0039-4bfb-82aa-ef21153696d0' ,url: 'https://github.com/adamayoba/demoMavenProject.git'
             }
         }
-        stage('Test') {
+        
+        stage('Build the application') {
             steps {
-                echo '------ Testing ------'
-                sh 'mvn test'
+                bat 'mvn clean install'
             }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
+        }
+        
+        stage('Unit Test Execution') {
+            steps {
+                bat 'mvn test'
+            }
+        }
+        
+        stage('Build the docker image') {
+            steps {
+                bat 'docker build --tag yobamansa/devops-tp7:v1.0.0 .'
+            }
+        }
+        
+        stage('Push the docker image') {
+            steps {
+                withCredentials([string(credentialsId: 'dockerhubpass', variable: 'dockerHubPass')]){
+                    bat "docker login -u yobamansa -p $dockerHubPass"
                 }
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo '------ Deploying ------'
-                //sh './jenkins/scripts/deliver.sh'
+                bat 'docker push yobamansa/devops-tp7:v1.0.0'
             }
         }
     }
