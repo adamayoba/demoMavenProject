@@ -35,7 +35,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'dockerhubpass', variable: 'dockerHubPass')]){
                     bat "docker login -u yobamansa -p $dockerHubPass"
                 }
-                bat 'docker push yobamansa/devops-tp7:v1.0.0'
+                bat1 'docker push yobamansa/devops-tp7:v1.0.0'
             }
             
             post{
