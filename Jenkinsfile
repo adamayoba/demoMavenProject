@@ -37,15 +37,6 @@ pipeline {
                 }
                 bat1 'docker push yobamansa/devops-tp7:v1.0.0'
             }
-            
-            post{
-              failure{
-                 emailext body: "Ce Build $BUILD_NUMBER a échoué",
-                     recipientProviders:[requestor()], 
-                     subject: "build",
-                     to: "bayoadama.9@gmail.com"
-                 }
-             }
         }
     }
 }
