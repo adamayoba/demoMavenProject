@@ -20,7 +20,7 @@ pipeline {
         
         stage('Unit Test Execution') {
             steps {
-                ba 'mvn test'
+                bat 'mvn test'
             }
         }
         
@@ -35,14 +35,14 @@ pipeline {
                 withCredentials([string(credentialsId: 'dockerhubpass', variable: 'dockerHubPass')]){
                     bat "docker login -u yobamansa -p $dockerHubPass"
                 }
-                bat 'docker push yobamansa/devops-tp7:v1.0.0'
+                ba 'docker push yobamansa/devops-tp7:v1.0.0'
             }
-        }
+            post{
+                failure{
+                    emailext body: "Ce Build $BUILD_NUMBER a échoué",
+                    recipientProviders:[requestor()], subject: "build", to: "bayoadama.9@gmail.com"
+                }
     }
-    post{
-        failure{
-            emailext body: "Ce Build $BUILD_NUMBER a échoué",
-            recipientProviders:[requestor()], subject: "build", to: "bayoadama.9@gmail.com"
         }
     }
 }
